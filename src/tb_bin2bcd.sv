@@ -42,6 +42,7 @@ module tb_bin2bcd;
         bin = 0;
         errors = 0;
         #5 reset = 0;
+        start = 1;
 
         $readmemb("input_vectors_bcd_sa.txt", test_vectors_in);
         $readmemb("output_vectors_bcd_sa.txt", test_vectors_out);
@@ -51,11 +52,14 @@ module tb_bin2bcd;
             bin = test_vectors_in[i];
             #10 clk = 1;
 
-            if(done_tick && bcd != test_vectors_out[i]) begin
+            wait(done_tick);
+            if((done_tick == 1) & (bcd != test_vectors_out[i])) begin
                 $display("Erro: Input = %b, Output = %b, Esperado = %b", {bin}, {bcd}, test_vectors_out[i]);
                 errors++;
             end
-
+            else begin
+                $display("Sucess: Input = %b, Output = %b, Esperado = %b", {bin}, {bcd}, test_vectors_out[i]);
+            end
             #10 clk = 0;
         end
 
@@ -64,8 +68,6 @@ module tb_bin2bcd;
         end else begin
             $display("Teste concluído com %0d erro(s).", errors);
         end
-
         #50 $finish;
     end
-
 endmodule
